@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="rambda",
-    version="1.0",
+    version="1.1.0",
     description="Mature AWS LAMBda utilites",
     author="Harry Reeder",
     author_email="harry.reeder@xdesign.com",

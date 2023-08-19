@@ -1,4 +1,5 @@
 import functools
+import inspect
 
 from aws_xray_sdk.core import xray_recorder
 
@@ -21,7 +22,11 @@ def lambda_rest_endpoint(_func=None, *, include_raw_event=False):
             xray_recorder.end_subsegment()
 
             xray_recorder.begin_subsegment("Call Inner Function")
-            response = func(request)
+            sig = inspect.signature(func, follow_wrapped=True)
+            kwargs = {}
+            if "request" in sig.parameters:
+                kwargs["request"] = request
+            response = func(**kwargs)
             xray_recorder.end_subsegment()
 
             xray_recorder.begin_subsegment("Process Response")
