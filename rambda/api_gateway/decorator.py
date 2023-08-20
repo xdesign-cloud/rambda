@@ -33,7 +33,7 @@ def lambda_rest_endpoint(_func=None, *, include_raw_event=False):
             if isinstance(response, dict):
                 response = Response(body=response)
             elif isinstance(response, tuple) and isinstance(response[0], int) and isinstance(response[1], dict):
-                response = Response(body=response[1], status_coode=response[0])
+                response = Response(body=response[1], status_code=response[0])
             xray_recorder.end_subsegment()
 
             return response.api_gateway_response()
