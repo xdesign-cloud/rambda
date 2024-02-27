@@ -8,8 +8,9 @@ from aws_lambda_typing.events import APIGatewayProxyEventV2
 
 @dataclass
 class Request:
-    body: Optional[str] = None
     headers: dict
+
+    body: Optional[str] = None
     jwt_claims: Optional[dict] = None
 
     raw_event: Optional[dict] = None
