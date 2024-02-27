@@ -1,7 +1,8 @@
 import json
+from dataclasses import dataclass, field
 
 from aws_xray_sdk.core import xray_recorder
-from dataclasses import dataclass, field
+
 
 @dataclass
 class Response:

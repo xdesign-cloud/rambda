@@ -1,3 +1,4 @@
+import json
 import os
 from dataclasses import dataclass
 
@@ -6,13 +7,15 @@ from aws_lambda_typing.events import APIGatewayProxyEventV2
 
 @dataclass
 class Request:
-    jwt_claims: dict | None
-    raw_event: dict | None
+    body: str | None
     headers: dict
+    jwt_claims: dict | None
+
+    raw_event: dict | None
 
     @classmethod
     def from_apigw_event(cls, event: APIGatewayProxyEventV2, include_raw_event=False):
-        kwargs = {"headers": event["headers"]}
+        kwargs = {"body": event["body"], "headers": event["headers"]}
 
         if jwt := event["requestContext"].get("authorizer", {}).get("jwt", {}):
             kwargs["jwt_claims"] = jwt["claims"]
@@ -37,3 +40,7 @@ class Request:
         # [foo bar baz] - interesting because it doesn't include quotes.
         # This resulted in this hacky but simple way of parsing the groups
         return self.jwt_claims["groups"][1:-1].split()
+
+    @property
+    def json(self):
+        return json.loads(self.body)
