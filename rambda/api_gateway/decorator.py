@@ -11,20 +11,17 @@ def lambda_rest_endpoint(_func=None, *, include_raw_event=False):
     def outer_wrap(func):
         @functools.wraps(func)
         def inner_wrap(event, context):
-            xray_recorder.begin_segment("Process Request")
             xray_recorder.begin_subsegment("Parse Request")
             request = Request.from_apigw_event(
                 event, include_raw_event=include_raw_event
             )
             xray_recorder.end_subsegment()
 
-            xray_recorder.begin_subsegment("Call Inner Function")
             sig = inspect.signature(func, follow_wrapped=True)
             kwargs = {}
             if "request" in sig.parameters:
                 kwargs["request"] = request
             response = func(**kwargs)
-            xray_recorder.end_subsegment()
 
             xray_recorder.begin_subsegment("Process Response")
             if isinstance(response, dict):
