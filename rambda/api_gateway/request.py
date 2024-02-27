@@ -1,6 +1,7 @@
 import os
-
 from dataclasses import dataclass
+
+from aws_lambda_typing.events import APIGatewayProxyEventV2
 
 
 @dataclass
@@ -8,6 +9,18 @@ class Request:
     jwt_claims: dict | None
     raw_event: dict | None
     headers: dict
+
+    @classmethod
+    def from_apigw_event(cls, event: APIGatewayProxyEventV2, include_raw_event=False):
+        kwargs = {"headers": event["headers"]}
+
+        if jwt := event["requestContext"].get("authorizer", {}).get("jwt", {}):
+            kwargs["jwt_claims"] = jwt["claims"]
+
+        if include_raw_event:
+            kwargs["raw_event"] = event
+
+        return cls(**kwargs)
 
     @property
     def user_id(self):

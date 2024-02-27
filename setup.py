@@ -9,5 +9,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         "aws-xray-sdk~=2.12",
+        "aws_lambda_typing~=2.18",
     ]
 )

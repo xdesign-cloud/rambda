@@ -13,11 +13,8 @@ def lambda_rest_endpoint(_func=None, *, include_raw_event=False):
         def inner_wrap(event, context):
             xray_recorder.begin_segment("Process Request")
             xray_recorder.begin_subsegment("Parse Request")
-            raw_event = event if include_raw_event else None
-            request = Request(
-                jwt_claims=event["requestContext"]["authorizer"]["jwt"]["claims"],
-                headers=event["headers"],
-                raw_event=raw_event,
+            request = Request.from_apigw_event(
+                event, include_raw_event=include_raw_event
             )
             xray_recorder.end_subsegment()
 
@@ -32,7 +29,11 @@ def lambda_rest_endpoint(_func=None, *, include_raw_event=False):
             xray_recorder.begin_subsegment("Process Response")
             if isinstance(response, dict):
                 response = Response(body=response)
-            elif isinstance(response, tuple) and isinstance(response[0], int) and isinstance(response[1], dict):
+            elif (
+                isinstance(response, tuple)  # ie `return 200, {"hello": "world"}`
+                and isinstance(response[0], int)  # Status code
+                and isinstance(response[1], dict)  # Response body
+            ):
                 response = Response(body=response[1], status_code=response[0])
             xray_recorder.end_subsegment()
 
