@@ -1,17 +1,18 @@
 import json
 import os
 from dataclasses import dataclass
+from typing import Optional
 
 from aws_lambda_typing.events import APIGatewayProxyEventV2
 
 
 @dataclass
 class Request:
-    body: str | None
+    body: Optional[str] = None
     headers: dict
-    jwt_claims: dict | None
+    jwt_claims: Optional[dict] = None
 
-    raw_event: dict | None
+    raw_event: Optional[dict] = None
 
     @classmethod
     def from_apigw_event(cls, event: APIGatewayProxyEventV2, include_raw_event=False):
