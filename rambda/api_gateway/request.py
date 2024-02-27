@@ -1,5 +1,6 @@
 import json
 import os
+from base64 import b64decode
 from dataclasses import dataclass
 from typing import Optional
 
@@ -18,6 +19,9 @@ class Request:
     @classmethod
     def from_apigw_event(cls, event: APIGatewayProxyEventV2, include_raw_event=False):
         kwargs = {"body": event["body"], "headers": event["headers"]}
+
+        if event["isBase64Encoded"]:
+            kwargs["body"] = b64decode(event["body"]).decode()
 
         if jwt := event["requestContext"].get("authorizer", {}).get("jwt", {}):
             kwargs["jwt_claims"] = jwt["claims"]
